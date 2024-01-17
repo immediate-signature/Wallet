@@ -2,16 +2,16 @@
 import hashlib  # for hashing
 import secrets  # for entropy
 import base58  # for easier debugging
-from fastecdsa import curve, keys
+# fastesdca alt
+import CurveTools
+from Point import Point
 
 # Constants
 PATH = r"C:\Users\yaele\PycharmProjects\Wallet\log.txt"
 WORDLIST = r"C:\Users\yaele\PycharmProjects\Wallet\english.txt"
 ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161494337
-
 # global variables
 index = 0
-
 
 # FUNCTIONS
 # 27-11-23 based on BIP39
@@ -24,7 +24,6 @@ def generate_entropy():
     print(ent.hex())  # for debugging
     ent = ent.hex() + checksum
     return ent
-
 
 def binary_slicing(mum):  # CORRECT
     """slices the sentence after  11 bits, generates a mnemonic sentence"""
@@ -44,7 +43,6 @@ def binary_slicing(mum):  # CORRECT
     print(sentence)
     return str[1:]
 
-
 def mnemonic_to_seed(sentence):  # CORRECT
     """creates a seed based on a mnemonic phrase"""
     sentence = sentence.encode()
@@ -59,11 +57,13 @@ def mnemonic_to_seed(sentence):  # CORRECT
     print(base58.b58encode(seed))
     return seed.hex()
 
-
+#PUBKEY
+def get_public_key(d: int, curve: CurveTools.Curve) -> Point:
+    return d * curve.G
 def generate_public_key(private_key):  # CORRECT
     """generates a compressed public key based on given private key -> str"""
     key = int(private_key.hex(), 16)
-    pub_key = keys.get_public_key(key, curve.secp256k1)
+    pub_key = get_public_key(key, CurveTools.secp256k1)
     x = hex(getattr(pub_key, 'x'))[2:]
     print(x)
     y = getattr(pub_key, 'y')
@@ -75,7 +75,6 @@ def generate_public_key(private_key):  # CORRECT
         comp = "03" + x
     return comp
 
-
 def master_key(seed):
     master = hashlib.pbkdf2_hmac('sha512', seed.encode(), 'Bitcoin seed'.encode(), 2480, dklen=None)
     print("master hex :" + master.hex())
@@ -84,7 +83,6 @@ def master_key(seed):
     chain_code = master.hex()[64:]  # IMPORTANT ELEMENT
     print(chain_code)
     return master, chain_code
-
 
 def derive_child(private_key, chain_code):  # TODO fix
     global index
@@ -128,8 +126,6 @@ def export():
 # LOGIN
 def run_wallet():  # NOT READY
     pass
-
-
 def authentication():  # NOT READY
     mnemonic = input("please enter your mnemonic phrase\n")
     while mnemonic_to_seed(mnemonic) != read_line(0, PATH):  # contains the hashed seed
@@ -139,6 +135,5 @@ def authentication():  # NOT READY
 
     run_wallet()
 
-
 if __name__ == '__main__':
-    export()
+    pass
