@@ -4,7 +4,7 @@ import secrets  # for entropy
 import base58  # for easier debugging
 # fastesdca alt
 import CurveTools
-from Point import Point
+import keys
 
 # Constants
 PATH = r"C:\Users\yaele\PycharmProjects\Wallet\log.txt"
@@ -13,17 +13,16 @@ ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161
 # global variables
 index = 0
 
+
 # FUNCTIONS
-# 27-11-23 based on BIP39
 def generate_entropy():
     """generates entropy and adds a checksum at the end"""  # CORRECT
     ent = secrets.token_bytes(32)
-    print(ent.hex())  # for debugging
     hashed = hashlib.sha256(ent)
     checksum = hashed.hexdigest()[0:2]
-    print(ent.hex())  # for debugging
     ent = ent.hex() + checksum
     return ent
+
 
 def binary_slicing(mum):  # CORRECT
     """slices the sentence after  11 bits, generates a mnemonic sentence"""
@@ -43,6 +42,7 @@ def binary_slicing(mum):  # CORRECT
     print(sentence)
     return str[1:]
 
+
 def mnemonic_to_seed(sentence):  # CORRECT
     """creates a seed based on a mnemonic phrase"""
     sentence = sentence.encode()
@@ -57,13 +57,37 @@ def mnemonic_to_seed(sentence):  # CORRECT
     print(base58.b58encode(seed))
     return seed.hex()
 
-#PUBKEY
-def get_public_key(d: int, curve: CurveTools.Curve) -> Point:
-    return d * curve.G
+
+# PUBKEY
+
+def generate_uncompressed_pubkey(private_key):  # Not Working
+    """generates an uncompressed public key based on given private key -> str"""
+    key = int(private_key.encode(), 16)
+    pub_key = keys.get_public_key(key, CurveTools.secp256k1)
+    x = hex(getattr(pub_key, 'x'))[2:]
+    y = getattr(pub_key, 'y')
+    str = "04" + x + y
+    print(str)
+    return str
+
+
+def generate_address(pubkey): #Only Theoretically
+    hash_object = hashlib.new('ripemd160')
+    hash_object.update(hashlib.sha256(pubkey))
+    hash_value = hash_object.hexdigest()
+    print(hash_value) #first step ripemd160(sha256(uncompressedkey))
+    hash_value = "6f" + hash_value #0x6f testnet
+    checksum = hashlib.sha256(hashlib.sha256(hash_value))
+    address  = hash_value + checksum
+    #to base 58
+    return base58.b58encode(address)
+
+
+
 def generate_public_key(private_key):  # CORRECT
     """generates a compressed public key based on given private key -> str"""
     key = int(private_key.hex(), 16)
-    pub_key = get_public_key(key, CurveTools.secp256k1)
+    pub_key = keys.get_public_key(key, CurveTools.secp256k1)
     x = hex(getattr(pub_key, 'x'))[2:]
     print(x)
     y = getattr(pub_key, 'y')
@@ -75,6 +99,7 @@ def generate_public_key(private_key):  # CORRECT
         comp = "03" + x
     return comp
 
+
 def master_key(seed):
     master = hashlib.pbkdf2_hmac('sha512', seed.encode(), 'Bitcoin seed'.encode(), 2480, dklen=None)
     print("master hex :" + master.hex())
@@ -83,6 +108,7 @@ def master_key(seed):
     chain_code = master.hex()[64:]  # IMPORTANT ELEMENT
     print(chain_code)
     return master, chain_code
+
 
 def derive_child(private_key, chain_code):  # TODO fix
     global index
@@ -121,11 +147,15 @@ def append(data, read_from):
 
 
 def export():
-    first =master_key(mnemonic_to_seed(binary_slicing(generate_entropy())))
-    append(derive_child(first[0],first[1]),PATH)
+    first = master_key(mnemonic_to_seed(binary_slicing(generate_entropy())))
+    append(derive_child(first[0], first[1]), PATH)
+
+
 # LOGIN
 def run_wallet():  # NOT READY
     pass
+
+
 def authentication():  # NOT READY
     mnemonic = input("please enter your mnemonic phrase\n")
     while mnemonic_to_seed(mnemonic) != read_line(0, PATH):  # contains the hashed seed
@@ -135,5 +165,6 @@ def authentication():  # NOT READY
 
     run_wallet()
 
+
 if __name__ == '__main__':
-    pass
+    generate_address('1'.encode())

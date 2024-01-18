@@ -1,6 +1,6 @@
-
 class Curve:
-    _oid_lookup = {}
+    _oid_lookup = {}  # a lookup table for getting curve instances by their object identifier
+
     def __init__(self, name: str, p: int, a: int, b: int, q: int, gx: int, gy: int, oid: bytes = None):
         self.name = name
         self.p = p
@@ -14,27 +14,18 @@ class Curve:
         if oid is not None:
             self._oid_lookup[oid] = self
 
+    @classmethod
+    def is_point_on_curve(self, point: (int, int)) -> bool:
+        x, y, = point
+        left = y * y
+        right = (x * x * x) + (self.a * x) + self.b
+        return (left - right) % self.p == 0
+
     @property
     def G(self):
-        """The base point of the curve.
-
-        For the purposes of ECDSA this point is multiplied by a private key to obtain the
-        corresponding public key. Make a property to avoid cyclic dependency of Point on Curve
-        (a point lies on a curve) and Curve on Point (curves have a base point).
-        """
-        import Point
+        from Point import Point
         return Point(self.gx, self.gy, self)
 
-secp256k1 = Curve(
-    'secp256k1',
-    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F,
-    0x0,
-    0x7,
-    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141,
-    0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
-    0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8,
-    b'\x2B\x81\x04\x00\x0A'
-)
 
 P256 = Curve(
     'P256',
@@ -47,4 +38,13 @@ P256 = Curve(
     b'\x2A\x86\x48\xCE\x3D\x03\x01\x07'
 )
 
-
+secp256k1 = Curve(
+    'secp256k1',
+    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F,
+    0x0,
+    0x7,
+    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141,
+    0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+    0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8,
+    b'\x2B\x81\x04\x00\x0A'
+)

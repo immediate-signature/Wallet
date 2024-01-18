@@ -1,4 +1,5 @@
-from CurveTools import P256
+import CurveTools
+
 
 class Point:
     """Representation of a point on an elliptic curve.
@@ -9,7 +10,7 @@ class Point:
         |  curve (:class:`Curve`): The curve that the point lies on.
     """
 
-    def __init__(self, x: int, y: int, curve = P256):
+    def __init__(self, x: int, y: int, curve=CurveTools.P256):
         # Reduce numbers before computation to avoid errors and limit computations.
         if curve is not None:
             x = x % curve.p
