@@ -1,9 +1,7 @@
 # IMPORTS
 import hashlib  # for hashing
 import secrets  # for entropy
-import base58  # for easier debugging
 import winreg  # for registry management
-import base58check
 import server
 
 # ec
@@ -22,16 +20,17 @@ index = 0
 # FUNCTIONS
 # 13.03.24
 def toWIF(raw):  # TODO: FIX!
-    raw = hex(raw)[2:]  # convert to hex (from decimal)
-    string = hex(int('0x80', 16)) + raw  # append prefix at the start
-    print(string)
-    l = base58check.b58encode(string.encode())
-    hash = hashlib.sha256(hashlib.sha256(string.encode()).hexdigest().encode()).hexdigest()
-    print(hash[:2])
-    string = string + hash[:2]
-    string = base58check.b58encode(string.encode())
-
-    return string
+    key = 'ef' + raw + '01'  # prefix for testnet
+    # sh = bin(int(key,16))[2:].encode()
+    dec = int(key, 16)
+    bi = bin(dec)
+    print(bi[0:])
+    sh = bi[2:].encode()
+    checksum = hashlib.sha256(sh).hexdigest()[:8]
+    key = key + checksum
+    enc = base58(key)
+    print(checksum)
+    return enc
 
 
 def generate_entropy():
@@ -70,10 +69,7 @@ def mnemonic_to_seed(sentence):  # CORRECT
     salt = "mnemonic" + passphrase
     hash_name = 'sha512'
     seed = hashlib.pbkdf2_hmac(hash_name, sentence, salt.encode(), iterations, dklen=None)
-    print(seed.hex())
     append(seed.hex(), PATH)
-    print("seed:")
-    print(base58.b58encode(seed))
     return seed.hex()
 
 
@@ -91,7 +87,8 @@ def generate_uncompressed_pubkey(private_key):  # CORRECT
 
 
 def generate_address(pubkey):  # O
-    """gets string of pubkey and returns the base 58 representation of the bitcoin address of this pubkey on the testnet"""
+    """gets string of pubkey and returns the base 58 representation of the bitcoin address of this pubkey on the
+    testnet"""
     hash_object = hashlib.new('ripemd160')
     data = hashlib.sha256(pubkey.encode()).hexdigest().encode()
     hash_object.update(data)
@@ -101,7 +98,7 @@ def generate_address(pubkey):  # O
     checksum = hashlib.sha256(hashlib.sha256(hash_value.encode()).hexdigest().encode()).hexdigest()
     address = hash_value + checksum
     # to base 58
-    return base58.b58encode(address)
+    return base58(address)
 
 
 def generate_public_key(private_key):  # CORRECT
@@ -166,12 +163,13 @@ def export():
 
 # REG
 def save(data):
-    '''creates the handle for saving in the reg'''
+    """creates the handle for saving in the reg"""
     h = winreg.CreateKey(winreg.HKEY_CURRENT_USER, 'bitWallet')
+    return h
 
 
 def save_on_reg(data: str):
-    '''inserts whatever data into the reg file'''
+    """inserts whatever data into the reg file"""
     backup = winreg.QueryValue(winreg.HKEY_CURRENT_USER, 'bitWallet')
     print(backup)
     string = backup + '\n' + data
@@ -193,10 +191,30 @@ def authentication():  # NOT READY
     run_wallet()
 
 
+def base58(num: str):  # CORRECT
+    """converts a string of hex into a string encoded in base58"""
+    num = int(num, 16)
+    if num == 0:
+        return '1'
+    output = ''
+    characters = ('1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
+                  'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e',
+                  'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+                  'z')
+    while num != 0:
+        output = characters[num % 58] + output
+        num = num // 58
+
+    return output
+
+
+# new wallet with bitcoin rpc
+def generate_wallet():
+    call = '-named createwallet "empty" blank=true '
+    server.rpc_call(call)
+    call = 'sethdseed ' + '"' + toWIF(master_key(generate_entropy())) + '"'
+    server.rpc_call(call)
+
+
 if __name__ == '__main__':
-    # print(toWIF(0x224b2d71866c35d3701f0fcdd7871cb191c2ae25068602759fcb9b59d9100e00))
-    # print(generate_uncompressed_pubkey('a3f068684b7135c514a4ab839eaf9cd02341e464588eb4a2b883eacdc04dd078'))
-    # print(int('e1f7416be89079f5a1c844b30795a075fe654495be8cedaf55d0b7f3909817b3', 16))
-    # print(keys.get_public_key(int('e1f7416be89079f5a1c844b30795a075fe654495be8cedaf55d0b7f3909817b3', 16)))
-    # inputs = ['60e31600000000001976a914977ae6e32349b99b72196cb62b5ef37329ed81b488ac']
-    server.rpc_call('getnetworkinfo')
+    print(base58('6f308da128'))
