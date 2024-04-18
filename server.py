@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 
 # list of rpc calls: https://developer.bitcoin.org/reference/rpc/index.html
@@ -14,7 +15,8 @@ def run_server():
 def rpc_call(name: str):
     rpc = "bitcoin-cli -regtest " + name
     # os.chdir('C:\\Program Files\\Bitcoin\\daemon')
-    os.system(rpc)
+    return subprocess.check_output(rpc)
 
+#include!!! name
 
 run_server()

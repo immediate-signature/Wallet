@@ -14,23 +14,38 @@ REGPATH = r"HKEY_CURRENT_USER\Software\BitWallet\1\PATH"
 WORDLIST = r"C:\Users\yaele\PycharmProjects\Wallet\english.txt"
 ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161494337
 # global variables
-index = 0
+index = 2 ** 31
 
 
 # FUNCTIONS
+# 13/04/24
+def extend(ppk, pcc):
+    global index
+    data = bytes.fromhex(ppk + hex(index)[2:])
+    key = bytes.fromhex(pcc)
+
+    index += 1
+    inter_key = hashlib.pbkdf2_hmac('sha512', data, key, 2048).hex()
+
+    il = inter_key[:64]
+    ir = inter_key[64:]
+
+    if int(ir, 16) >= ORDER:
+        raise "chain code is greater than the curve, try again with another index"
+
+    cpk = (int(il, 16) + int(ppk, 16)) % ORDER
+    cpk = hex(cpk)
+
+    return cpk[2:]
+
+
 # 13.03.24
-def toWIF(raw):  # TODO: FIX!
+def toWIF(raw):  # CORRECT
+    """gets private key and turns it into a WIF private key"""
     key = 'ef' + raw + '01'  # prefix for testnet
-    # sh = bin(int(key,16))[2:].encode()
-    dec = int(key, 16)
-    bi = bin(dec)
-    print(bi[0:])
-    sh = bi[2:].encode()
-    checksum = hashlib.sha256(sh).hexdigest()[:8]
-    key = key + checksum
-    enc = base58(key)
-    print(checksum)
-    return enc
+    key = key + hash256(key)[:8]  # we only need the first 4 bytes
+    key = base58(key)
+    return key
 
 
 def generate_entropy():
@@ -82,7 +97,6 @@ def generate_uncompressed_pubkey(private_key):  # CORRECT
     x = hex(getattr(pub_key, 'x'))[2:]
     y = hex(getattr(pub_key, 'y'))[2:]
     string = "04" + x + y
-    print(string)
     return string
 
 
@@ -115,31 +129,11 @@ def generate_public_key(private_key):  # CORRECT
 
 
 def master_key(seed):
+    # generates the master private key + 32 bytes of data
     master = hashlib.pbkdf2_hmac('sha512', seed.encode(), 'Bitcoin seed'.encode(), 2480, dklen=None)
-    print("master hex :" + master.hex())
     private_key = master.hex()[:64]  # IMPORTANT ELEMENT
-    print(private_key)
     chain_code = master.hex()[64:]  # IMPORTANT ELEMENT
-    print(chain_code)
-    return master, chain_code
-
-
-def derive_child(private_key, chain_code):
-    global index
-    public_key = generate_public_key(private_key)
-    print("pubkey:" + public_key)
-    data = str(int(public_key.encode(), 16) + index).encode()
-    index += 1
-    cc = str(chain_code).encode()
-    inter_key = hashlib.pbkdf2_hmac('sha512', data, cc, 2048, dklen=None)
-    temp = int.from_bytes(inter_key, "big")
-    child_chain_code = int(hex(temp)[64:-1], 16)
-    high = int(hex(temp)[0:65], 16)
-    # if child_chain_code >= ORDER:
-    # raise Exception("Chain code is greater than the order of the curve. Try the next index.")
-    # derive_child(private_key, chain_code)
-    child_private_key = hex(int((high + int(private_key, 16)), 16) % ORDER)[64]
-    print(child_private_key)
+    return private_key, chain_code
 
 
 def read_line(line_number, read_from):
@@ -158,11 +152,11 @@ def append(data, read_from):
 
 def export():
     first = master_key(mnemonic_to_seed(binary_slicing(generate_entropy())))
-    append(derive_child(first[0], first[1]), PATH)
+    append(extend(first[0], first[1]), PATH)
 
 
 # REG
-def save(data):
+def save():
     """creates the handle for saving in the reg"""
     h = winreg.CreateKey(winreg.HKEY_CURRENT_USER, 'bitWallet')
     return h
@@ -208,6 +202,15 @@ def base58(num: str):  # CORRECT
     return output
 
 
+def hash256(data: str):
+    """implementation of the HASH256 function (doing sha256 twice on the same string)
+    data : a string of the data in hexadecimal
+    """
+    h1 = hashlib.sha256(bytes.fromhex(data)).hexdigest()
+    h2 = hashlib.sha256(bytes.fromhex(h1)).hexdigest()
+    return h2
+
+
 # new wallet with bitcoin rpc
 def generate_wallet():
     call = '-named createwallet "empty" blank=true '
@@ -217,4 +220,4 @@ def generate_wallet():
 
 
 if __name__ == '__main__':
-    print(base58('6f308da128'))
+    print(toWIF(mnemonic_to_seed(binary_slicing(generate_entropy()))))
