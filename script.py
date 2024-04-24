@@ -1,20 +1,25 @@
-import subprocess
-
 import main
 import server
 import json
-import jsonrpc
 
 # new wallet
 
-me = 'bcrt1q93wmp98xzlaf2lka6xudn4rychmhtwracnxdph'  # the users address!!
-
+def extract(input):
+    return json.dumps(json.loads(input))
 
 def generate_wallet():
-    call = '-named createwallet "empty" blank=true '
+    call = '-named createwallet "wallet" blank=true descriptors=false load_on_startup=true '
     server.rpc_call(call)
-    call = 'sethdseed ' + '"' + main.toWIF(main.master_key(main.generate_entropy())) + '"'
-    server.rpc_call(call)
+    # for import muli - calls the other functions I made.
+    master = main.master_key(main.mnemonic_to_seed(main.binary_slicing(main.generate_entropy())))
+    key = main.extend(master[0], master[1])
+    privkey = main.toWIF(key)
+    pubkey = main.generate_public_key(key)
+    address = main.generate_address(pubkey)
+    call = (r'-rpcwallet="legacy" importmulti "[{\"scriptPubKey\":{\"address\":\"' + address + (r'\"},\"timestamp'
+                                                                                                r'\":\"now\",'
+                                                                                                r'\"pubkeys\":[\"') +
+            pubkey + r'\"],\"keys\":[\"' + privkey + r'\"]}]" "{\"rescan\":false}"')
 
 
 # existing wallet
@@ -53,8 +58,12 @@ def transaction(amount: int, destination: str):
 
     return server.rpc_call("createrawtransaction " + '"' + UTXOs + '" ' + output)
 
-def sign(raw_tx):
-    call = 'signrawtransaction ' + raw_tx + "'[]' " + r'[\"' + me + r'\"]'
 
-print(transaction(100, 'bcrt1qvcrs8hlkclcje970j9ak3lzyrakl5tk8edf4h5'))
+def getmyaddress():
+    me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="d3" getaddressesbylabel ""')))[2:36]
+    return me
 
+
+def sign(raw_tx, address=getmyaddress()):
+    call = 'signrawtransaction ' + raw_tx + "'[]' " + r'[\"' + address + r'\"]'
+    server.rpc_call(call)

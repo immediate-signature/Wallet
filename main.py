@@ -100,7 +100,7 @@ def generate_uncompressed_pubkey(private_key):  # CORRECT
     return string
 
 
-def generate_address(pubkey):  # O
+def generate_address(pubkey):  # P2PKH - Not commonly used so I didn't used it in the final product
     """gets string of pubkey and returns the base 58 representation of the bitcoin address of this pubkey on the
     testnet"""
     hash_object = hashlib.new('ripemd160')

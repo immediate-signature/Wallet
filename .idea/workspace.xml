@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22918acc-c443-4ad7-b1f9-b3846c1651a2" name="Changes" comment="includes base 58 encryption">
-      <change afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
+    <list default="true" id="22918acc-c443-4ad7-b1f9-b3846c1651a2" name="Changes" comment="Script includes a list of functions for managing the wallet">
+      <change afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/playground.py" beforeDir="false" afterPath="$PROJECT_DIR$/playground.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +165,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712749742082</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Script includes a list of functions for managing the wallet">
+      <option name="closed" value="true" />
+      <created>1713437376954</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1713437376954</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -198,6 +206,7 @@
     <MESSAGE value="added address - #TODO fix the bug in the elliptic curve" />
     <MESSAGE value="includes a wrapper for calling the bitcoin rpc api" />
     <MESSAGE value="includes base 58 encryption" />
-    <option name="LAST_COMMIT_MESSAGE" value="includes base 58 encryption" />
+    <MESSAGE value="Script includes a list of functions for managing the wallet" />
+    <option name="LAST_COMMIT_MESSAGE" value="Script includes a list of functions for managing the wallet" />
   </component>
 </project>
