@@ -1,12 +1,15 @@
 # IMPORTS
 import hashlib  # for hashing
+import json
 import secrets  # for entropy
+import tkinter
 import winreg  # for registry management
 import server
 
 # ec
 import CurveTools
 import keys
+from gui import Signup,Login,Phrase
 
 # Constants
 PATH = r"C:\Users\yaele\PycharmProjects\Wallet\log.txt"
@@ -16,7 +19,9 @@ ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161
 # global variables
 index = 2 ** 31
 
-
+def getmyaddress():
+    me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="wallet" getaddressesbylabel ""')))[2:36]
+    return me
 # FUNCTIONS
 # 13/04/24
 def extend(ppk, pcc):
@@ -73,6 +78,7 @@ def binary_slicing(mum):  # CORRECT
         string = string + ' ' + output
     sentence = sentence.replace('\n', ' ')
     print(sentence)
+    print(string[1:])
     return string[1:]
 
 
@@ -88,7 +94,6 @@ def mnemonic_to_seed(sentence):  # CORRECT
     return seed.hex()
 
 
-# PUBKEY
 
 def generate_uncompressed_pubkey(private_key):  # CORRECT
     """generates an uncompressed public key based on given private key -> str"""
@@ -172,19 +177,36 @@ def save_on_reg(data: str):
 
 
 # LOGIN
-def run_wallet():  # NOT READY
-    pass
+def detectuse():
+    try:
+        folder = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'bitWallet')
+    except:
+        signup()
+    else:
+        login()  # change to username and password
+        folder.Close()
 
 
-def authentication():  # NOT READY
-    mnemonic = input("please enter your mnemonic phrase\n")
-    while mnemonic_to_seed(mnemonic) != read_line(0, PATH):  # contains the hashed seed
-        response = input('wrong mnemonic phrase. Would you like to try again or generate new one (qm)')
-        if response == 'n':
-            append(mnemonic_to_seed(binary_slicing(generate_entropy())), PATH)
-    run_wallet()
+
+def signup():
+    print(signup)
+    '''opens the gui signup window'''
+    root = tkinter.Tk()
+    obj = Signup(root)
+    root.mainloop()
 
 
+
+
+def login():
+    '''opens the gui log in window'''
+    print("login")
+    root = tkinter.Tk()
+    obj = Login(root)
+    root.mainloop()
+
+
+# USEFUL
 def base58(num: str):  # CORRECT
     """converts a string of hex into a string encoded in base58"""
     num = int(num, 16)
@@ -213,11 +235,22 @@ def hash256(data: str):
 
 # new wallet with bitcoin rpc
 def generate_wallet():
-    call = '-named createwallet "empty" blank=true '
+    call = '-named createwallet "wallet" blank=true descriptors=false load_on_startup=true '
     server.rpc_call(call)
-    call = 'sethdseed ' + '"' + toWIF(master_key(generate_entropy())) + '"'
+    # for import muli - calls the other functions I made.
+    mnemonic = binary_slicing(generate_entropy())
+    master = master_key(mnemonic_to_seed(mnemonic))
+    key = extend(master[0], master[1])
+    privkey = toWIF(key)
+    pubkey = generate_public_key(key)
+    address = generate_address(pubkey)
+    call = (r'-rpcwallet="legacy" importmulti "[{\"scriptPubKey\":{\"address\":\"' + address + (r'\"},\"timestamp'
+                                                                                                r'\":\"now\",'
+                                                                                                r'\"pubkeys\":[\"') +
+            pubkey + r'\"],\"keys\":[\"' + privkey + r'\"]}]" "{\"rescan\":false}"')
     server.rpc_call(call)
-
+    return mnemonic
 
 if __name__ == '__main__':
-    print(toWIF(mnemonic_to_seed(binary_slicing(generate_entropy()))))
+    #mnemonic_to_seed(generate_entropy())
+    detectuse()

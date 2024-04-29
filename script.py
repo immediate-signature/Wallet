@@ -1,28 +1,13 @@
-import main
 import server
 import json
+
 
 # new wallet
 
 def extract(input):
     return json.dumps(json.loads(input))
 
-def generate_wallet():
-    call = '-named createwallet "wallet" blank=true descriptors=false load_on_startup=true '
-    server.rpc_call(call)
-    # for import muli - calls the other functions I made.
-    master = main.master_key(main.mnemonic_to_seed(main.binary_slicing(main.generate_entropy())))
-    key = main.extend(master[0], master[1])
-    privkey = main.toWIF(key)
-    pubkey = main.generate_public_key(key)
-    address = main.generate_address(pubkey)
-    call = (r'-rpcwallet="legacy" importmulti "[{\"scriptPubKey\":{\"address\":\"' + address + (r'\"},\"timestamp'
-                                                                                                r'\":\"now\",'
-                                                                                                r'\"pubkeys\":[\"') +
-            pubkey + r'\"],\"keys\":[\"' + privkey + r'\"]}]" "{\"rescan\":false}"')
 
-
-# existing wallet
 
 def load(name):
     # if you know the name
@@ -37,14 +22,18 @@ def backup(PATH):
 
 
 def filter_utxo(amount):
-    data = '-named -rpcwallet="trial" listunspent  query_options=' + r'"{\"minimumSumAmount\":' + str(
+    data = '-named -rpcwallet="wallet" listunspent query_options=' + r'"{\"minimumSumAmount\":' + str(
         amount) + '}"'  # name of the wallet!!
     return server.rpc_call(data)
 
 
 def transaction(amount: int, destination: str):
     ## Outputs - inputs = transaction fee, so always double-check your math!
+    me = json.dumps(json.loads(server.rpc_call(r'getaddressesbylabel ""')))[2:36]
+    print(me)
     list = json.loads(filter_utxo(amount))
+    if (len(list) == 0 ):
+        return "error"
     UTXOs = '['
     sum = 0
     for i in range(len(list)):
@@ -59,11 +48,9 @@ def transaction(amount: int, destination: str):
     return server.rpc_call("createrawtransaction " + '"' + UTXOs + '" ' + output)
 
 
-def getmyaddress():
-    me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="d3" getaddressesbylabel ""')))[2:36]
-    return me
 
 
-def sign(raw_tx, address=getmyaddress()):
+
+def sign(raw_tx, address):
     call = 'signrawtransaction ' + raw_tx + "'[]' " + r'[\"' + address + r'\"]'
     server.rpc_call(call)

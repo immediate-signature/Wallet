@@ -1,7 +1,10 @@
 import hashlib
+import json
+
 import CurveTools
 import keys
 import main
+import server
 
 
 def generate_public_key(private_key):  # CORRECT
@@ -34,7 +37,7 @@ def generate_address(pubkey):  # CORRECT
 
 # generate public key = comppresed already
 
-def bech32(pubkey):
+def bech32(pubkey): #not used
     # making of the ScriptPubKey
     data = hashlib.sha256(bytes.fromhex(pubkey)).hexdigest()
     hash_object = hashlib.new('ripemd160')
@@ -43,10 +46,19 @@ def bech32(pubkey):
     return script_public_key
 
 
-master = main.master_key(main.mnemonic_to_seed(main.binary_slicing(main.generate_entropy())))
+# for import muli - calls the other functions I made.
+mnemonic = main.binary_slicing(main.generate_entropy())
+master = main.master_key(main.mnemonic_to_seed(mnemonic))
 key = main.extend(master[0], master[1])
-wif = main.toWIF(key)
-print(wif)
-print(generate_address(generate_public_key(key)))
-print(bech32(generate_public_key(key)))
-print(generate_public_key(key))
+privkey = main.toWIF(key)
+pubkey = generate_public_key(key)
+address = generate_address(pubkey)
+
+print(privkey)
+print(pubkey)
+print(address)
+
+list = json.dumps(json.loads(server.rpc_call(r'getaddressesbylabel ""')))
+print(type(list))
+print(list[2:36])
+print(list[1])
