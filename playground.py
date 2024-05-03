@@ -4,6 +4,7 @@ import json
 import CurveTools
 import keys
 import main
+import script
 import server
 
 
@@ -47,6 +48,7 @@ def bech32(pubkey): #not used
 
 
 # for import muli - calls the other functions I made.
+'''
 mnemonic = main.binary_slicing(main.generate_entropy())
 master = main.master_key(main.mnemonic_to_seed(mnemonic))
 key = main.extend(master[0], master[1])
@@ -62,3 +64,43 @@ list = json.dumps(json.loads(server.rpc_call(r'getaddressesbylabel ""')))
 print(type(list))
 print(list[2:36])
 print(list[1])
+
+print("new:")
+data = server.rpc_call(r'decoderawtransaction \"02000000014e08a48d95c8f4c03d8cb33c21ab35bc7d7acbcdf30274d8d93a094a6296b66d0000000000fdffffff0200e1f505000000001600144122612ba846ce849edb984c7edd701ecac8d9c198978b44000000001976a9146a6402eef465f58a16810d5c2313a3be1de7093788ac00000000\"')
+hex = json.loads(data)["hex"]
+print(hex)
+
+
+
+data = server.rpc_call(r'-rpcwallet="wallet" listunspent 0')
+data = json.loads(data)[0]["txid"]
+
+print(data)
+'''
+#reciever
+def filter_utxo(amount):
+    data = '-named -rpcwallet="reciever" listunspent 0 query_options=' + r'"{\"minimumSumAmount\":' + str(
+        amount) + '}"'  # name of the wallet!!
+    return server.rpc_call(data)
+
+def transaction(amount: int, destination: str):
+    ## Outputs - inputs = transaction fee, so always double-check your math!
+    me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="reciever" getaddressesbylabel ""')))[2:36]
+    print(me)
+    list = json.loads(filter_utxo(amount))
+    if (len(list) == 0 ):
+        return "error"
+    UTXOs = '['
+    sum = 0
+    for i in range(len(list)):
+        UT = list[i]
+        sum += UT["amount"]
+        UTXOs = UTXOs + r'{\"txid\":\"' + UT["txid"] + r'\",\"vout\":' + str(UT["vout"]) + r'},'
+    UTXOs = UTXOs[:-1] + ']'  # list of inputs for the transaction
+
+    # OUTPUT
+    output = r'{\"' + destination + r'\":' + str(amount) + "," + r'\"' + me + r'\":' + str(sum - amount - FEE) + "}"
+
+    return server.rpc_call("createrawtransaction " + '"' + UTXOs + '" ' + output)
+
+print(transaction(0.5, server.rpc_call(r'-rpcwallet-"wallet" getaddressesbylabel ""') ))

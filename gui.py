@@ -6,10 +6,12 @@ from tkinter import messagebox
 import script
 import server
 
+
 def back_to_homepage():
     root = tkinter.Tk()
     obj = Homepage(root)
     root.mainloop()
+
 
 def size(root):
     # root setting
@@ -65,7 +67,6 @@ class Signup:
             self.root.destory()
 
 
-
 class Login:
     def __init__(self, root):
         self.root = root
@@ -98,16 +99,15 @@ class Login:
             back_to_homepage()
 
 
-
 class Send:
     def __init__(self, root):
         self.root = root
         self.root.title('wallet')
         self.root.geometry(size(self.root))
 
-        text=tkinter.Label(text="destination").place(x=80, y=100)
-        self.dest=tkinter.Entry()
-        self.dest.place(x=80,y=120)
+        text = tkinter.Label(text="destination").place(x=80, y=100)
+        self.dest = tkinter.Entry()
+        self.dest.place(x=80, y=120)
 
         text = tkinter.Label(text="amount").place(x=80, y=150)
         self.amount = tkinter.Entry()
@@ -116,20 +116,34 @@ class Send:
         send = tkinter.Button(text="send", command=self.make)
         send.place(x=80, y=200)
 
-        back = tkinter.Button(text='back',command=self.back_to_homepage)
+        back = tkinter.Button(text='back', command=self.back_to_homepage)
         back.place(x=80, y=230)
 
         return
+
     def make(self):
         if self.amount.get() == '' or self.dest.get() == '':
             return messagebox.showerror("Error", "please fill out all of the fields")
         amount = self.amount.get()
         dest = self.dest.get()
-        tx= script.transaction(int(amount),dest)
-        print(tx)
-        if tx=='error':
+        tx = script.transaction(int(amount), dest)
+        if tx == 'error':
             return messagebox.showerror("Error", "You don't have enough BTC to make this transaction")
         else:
+            tx = str(tx)[2:-5]
+            signed = script.sign(tx)
+            signed = json.loads(signed)["hex"]
+
+            window2 = tkinter.Toplevel()
+            window2.title("success")
+            window2.geometry("600x400")
+            text = tkinter.Text(window2)
+
+            text.insert('1.0',chars="the signed raw transaction is: " + signed)
+            text['state'] = 'disabled'
+            text.pack()
+            window2.mainloop()
+
             self.root.destroy()
             window = tkinter.Tk()
             obj = Homepage(window)
@@ -155,25 +169,35 @@ class Sign:
         send = tkinter.Button(text="send", command=self.make)
         send.place(x=80, y=200)
 
-        back =tkinter.Button(text="back", command=self.back_to_homepage)
+        back = tkinter.Button(text="back", command=self.back_to_homepage)
         back.place(x=80, y=230)
 
         return
 
     def make(self):
         src = self.src.get()
-        script.sign(src)
+        tx = script.sign(src)
+        tx = str(json.loads(tx)["hex"])
+        print(tx)
+        signed = script.sign(tx)
+        signed = json.loads(signed)["hex"]
+        print(signed)
+        num = script.send(signed)
+        print(num)
+
+#TODO
         self.root.destroy()
         window = tkinter.Tk()
         obj = Homepage(window)
         window.mainloop()
-
 
     def back_to_homepage(self):
         self.root.destroy()
         window = tkinter.Tk()
         obj = Homepage(window)
         window.mainloop()
+
+
 class Homepage:
     def __init__(self, root):
         self.root = root
@@ -194,7 +218,7 @@ class Homepage:
         send = tkinter.Button(text="send bitcoin", command=self.send)
         send.place(x=100, y=200)
 
-        sign = tkinter.Button(text="sign a transaction",command=self.sign)
+        sign = tkinter.Button(text="sign a transaction", command=self.sign)
         sign.place(x=400, y=200)
 
         return
@@ -212,9 +236,6 @@ class Homepage:
         window.mainloop()
 
 
-
-
-
 class Phrase:
     def __init__(self, root, mnemonic_phrase):
         self.root = root
@@ -227,7 +248,8 @@ class Phrase:
         title = tkinter.Label(text="please do not share this information", font=("Impact", 35, "bold"),
                               fg="#FC581F").place(x=100, y=500)
 
-        next = tkinter.Button(text="next", justify="center", font=("impact", 10, "bold"), bd=0, command=self.back_to_homepage)
+        next = tkinter.Button(text="next", justify="center", font=("impact", 10, "bold"), bd=0,
+                              command=self.back_to_homepage)
         next.place(x=400, y=400)
 
         return
@@ -238,5 +260,10 @@ class Phrase:
         obj = Homepage(window)
         window.mainloop()
 
+class Popup:
+    def __init__(self, root, text):
+        self.root = root
+        self.root.title('success')
+        self.root.geometry('800x600')
 
-
+        message =tkinter.Label(text=text).place(x=100, y=430)

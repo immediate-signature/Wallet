@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22918acc-c443-4ad7-b1f9-b3846c1651a2" name="Changes" comment="gui (not done!)">
+    <list default="true" id="22918acc-c443-4ad7-b1f9-b3846c1651a2" name="Changes" comment="basic gui #TODO: design">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/playground.py" beforeDir="false" afterPath="$PROJECT_DIR$/playground.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
     </list>
@@ -190,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714213510209</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="basic gui #TODO: design">
+      <option name="closed" value="true" />
+      <created>1714396035553</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1714396035553</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -225,6 +232,7 @@
     <MESSAGE value="includes base 58 encryption" />
     <MESSAGE value="Script includes a list of functions for managing the wallet" />
     <MESSAGE value="gui (not done!)" />
-    <option name="LAST_COMMIT_MESSAGE" value="gui (not done!)" />
+    <MESSAGE value="basic gui #TODO: design" />
+    <option name="LAST_COMMIT_MESSAGE" value="basic gui #TODO: design" />
   </component>
 </project>
