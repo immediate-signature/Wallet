@@ -185,7 +185,7 @@ class Sign:
         num = script.send(signed)
         print(num)
 
-#TODO
+
         self.root.destroy()
         window = tkinter.Tk()
         obj = Homepage(window)
