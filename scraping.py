@@ -7,4 +7,8 @@ def get_rate():
    soup = BS(html)
    data_tag = soup.find('div', 'YMlKec fxKbKc')
    rate = data_tag.contents[0]
-   return rate
+   num =''
+   for i in range(0,len(rate)):
+      if rate[i] != ',':
+         num = num + rate[i]
+   return num

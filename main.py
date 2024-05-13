@@ -22,9 +22,9 @@ index = 2 ** 31
 def getmyaddress():
     me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="wallet" getaddressesbylabel ""')))[2:36]
     return me
-# FUNCTIONS
-# 13/04/24
+
 def extend(ppk, pcc):
+    """derives chiled keys from the master key"""
     global index
     data = bytes.fromhex(ppk + hex(index)[2:])
     key = bytes.fromhex(pcc)
@@ -44,8 +44,7 @@ def extend(ppk, pcc):
     return cpk[2:]
 
 
-# 13.03.24
-def toWIF(raw):  # CORRECT
+def toWIF(raw):
     """gets private key and turns it into a WIF private key"""
     key = 'ef' + raw + '01'  # prefix for testnet
     key = key + hash256(key)[:8]  # we only need the first 4 bytes
@@ -78,11 +77,10 @@ def binary_slicing(mum):  # CORRECT
         string = string + ' ' + output
     sentence = sentence.replace('\n', ' ')
     print(sentence)
-    print(string[1:])
     return string[1:]
 
 
-def mnemonic_to_seed(sentence):  # CORRECT
+def mnemonic_to_seed(sentence):
     """creates a seed based on a mnemonic phrase"""
     sentence = sentence.encode()
     passphrase = ''
@@ -95,7 +93,7 @@ def mnemonic_to_seed(sentence):  # CORRECT
 
 
 
-def generate_uncompressed_pubkey(private_key):  # CORRECT
+def generate_uncompressed_pubkey(private_key):
     """generates an uncompressed public key based on given private key -> str"""
     key = int(private_key.encode(), 16)
     pub_key = keys.get_public_key(key, CurveTools.secp256k1)
@@ -105,7 +103,7 @@ def generate_uncompressed_pubkey(private_key):  # CORRECT
     return string
 
 
-def generate_address(pubkey):  # P2PKH - Not commonly used so I didn't used it in the final product
+def generate_address(pubkey):
     """gets string of pubkey and returns the base 58 representation of the bitcoin address of this pubkey on the
     testnet"""
     hash_object = hashlib.new('ripemd160')
@@ -120,7 +118,7 @@ def generate_address(pubkey):  # P2PKH - Not commonly used so I didn't used it i
     return base58(address)
 
 
-def generate_public_key(private_key):  # CORRECT
+def generate_public_key(private_key):
     """generates a compressed public key based on given private key -> str"""
     key = int(private_key.encode(), 16)
     pub_key = keys.get_public_key(key, CurveTools.secp256k1)
