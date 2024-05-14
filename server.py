@@ -17,6 +17,5 @@ def rpc_call(name: str):
     # os.chdir('C:\\Program Files\\Bitcoin\\daemon')
     return subprocess.check_output(rpc)
 
-#include!!! name
 
 run_server()

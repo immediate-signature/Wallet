@@ -8,8 +8,6 @@ FEE = 0.00001000
 def extract(input):
     return json.dumps(json.loads(input))
 
-
-
 def load(name):
     # if you know the name
     call = 'loadwallet "' + name + '"' + ' true'  # true = load_on_startup
@@ -29,7 +27,6 @@ def filter_utxo(amount):
 
 
 def transaction(amount: int, destination: str):
-    ## Outputs - inputs = transaction fee, so always double-check your math!
     me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="wallet" getaddressesbylabel ""')))[2:36]
     print(me)
     list = json.loads(filter_utxo(amount))

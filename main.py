@@ -24,7 +24,7 @@ def getmyaddress():
     return me
 
 def extend(ppk, pcc):
-    """derives chiled keys from the master key"""
+    """derives child keys from the master key"""
     global index
     data = bytes.fromhex(ppk + hex(index)[2:])
     key = bytes.fromhex(pcc)
@@ -187,10 +187,14 @@ def detectuse():
 
 
 def signup():
-    print(signup)
     '''opens the gui signup window'''
+
     root = tkinter.Tk()
     obj = Signup(root)
+    root.mainloop()
+    mnemonic=generate_wallet() #starts to run after the signup quits- which means succsessful registration
+    root = tkinter.Tk()
+    obj = Phrase(root,mnemonic)
     root.mainloop()
 
 
@@ -250,5 +254,4 @@ def generate_wallet():
     return mnemonic
 
 if __name__ == '__main__':
-    #mnemonic_to_seed(generate_entropy())
     detectuse()

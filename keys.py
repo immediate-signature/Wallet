@@ -29,22 +29,13 @@ def sign(data, private_key):
     s = ((hdata + r * private_key) * (modinv(int(ent), CurveTools.secp256k1.p))) % CurveTools.secp256k1.p
     return r, s
 
-"""def sign(private_key, data):
-    # data = the entire transaction data
-    key = int(generate_entropy(), 16)
-    pub_key = keys.get_public_key(key, CurveTools.secp256k1)
-    r = hex(getattr(pub_key, 'x'))[2:]
-    mult = private_key * r
-    message = hashlib.sha256(hashlib.sha256(data).digest()).digest()
-    s = (mult + message) / key
-"""
 
 
 def verify(data, s, r, pubkey, n=CurveTools.secp256k1.p):
     message = (hashlib.sha256(data.encode).hexdigest()) % CurveTools.secp256k1.p
     gp = (int(message, 16) * modinv(s)) % CurveTools.secp256k1.p
     pub_key = r // s
-    # if pubkey is Point
+    # if pubkey is a Point
     # def verify (s,r,n=CurveTools.secp256k1.p, pubkey) : #based on https://github.com/wobine/blackboard101/blob/master/EllipticCurvesPart5-TheMagic-SigningAndVerifying.py
     w = modinv(s)
     p1 = CurveTools.secp256k1.G.multiply((r * w) % n)

@@ -172,6 +172,7 @@ class Signup:
             winreg.SetValueEx(h, 'password', 0, winreg.REG_SZ, self.password.get())
             self.root.destory()
 
+
 class Send:
     def __init__(self, root):
         self.root = root
