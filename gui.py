@@ -64,14 +64,14 @@ class Homepage:
         self.root.title('wallet')
         self.root.geometry(size(self.root))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\Downloads\pasted image edited.png")
+        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\pasted image edited.png")
         self.canvas1 = tkinter.Canvas(self.root,width=self.root.winfo_screenwidth(), height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both",expand=True)
         self.canvas1.create_image(0,0,image=self.bg, anchor="nw")
 
-        amount = json.loads(server.rpc_call('-rpcwallet="wallet" getbalance'))
+        amount = round(json.loads(server.rpc_call('-rpcwallet="wallet" getbalance')),2)
         self.canvas1.create_text(130, 150, text=str(amount) + ' BTC' ,font=("Roboto", 20, "bold"), fill="#FFFFFF")
-        btc_amount = str(float(amount) * float(scraping.get_rate()))
+        btc_amount = str(round(float(amount) * float(scraping.get_rate()),2))
         self.canvas1.create_text(370, 150, text=btc_amount + '$', font=("Roboto", 20, "bold"), fill="#444444", justify="center")
 
         send = tkinter.Button(text="send", font = ("Roboto",35, "bold"), command=self.send, fg="#FFFFFF",bg="#444444", bd=0)
@@ -112,7 +112,7 @@ class Login:
         self.root.title('Login')
         self.root.geometry(size(self.root,1200,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\Downloads\login.png")
+        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\login.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -147,7 +147,7 @@ class Signup:
         self.root.title('Sign up')
         self.root.geometry(size(self.root,1200,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\Downloads\signup.png")
+        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\signup.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -188,7 +188,7 @@ class Send:
         self.root.title('wallet')
         self.root.geometry(size(self.root,1210,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\Downloads\translation.png")
+        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\transfer.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -248,7 +248,7 @@ class Sign:
         self.root.title('wallet')
         self.root.geometry(size(self.root,1000,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\Downloads\sign.png")
+        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\sign.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)

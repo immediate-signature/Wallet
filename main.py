@@ -197,7 +197,6 @@ def signup():
 
 def login():
     '''opens the gui log in window'''
-    print("login")
     root = tkinter.Tk()
     obj = Login(root)
     root.mainloop()
