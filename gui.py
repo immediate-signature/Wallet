@@ -6,6 +6,7 @@ from tkinter import messagebox
 import scraping
 import script
 import server
+import pyperclip
 
 
 def back_to_homepage():
@@ -80,6 +81,10 @@ class Homepage:
         sign = tkinter.Button(text="recieve", font = ("Roboto",35, "bold"), command=self.sign, fg="#FFFFFF",bg="#444444", bd=0)
         sign.place(x=580, y=300)
 
+        self.me = json.dumps(json.loads(server.rpc_call(r'-rpcwallet="wallet" getaddressesbylabel ""')))[2:36]
+        button= tkinter.Button(text=self.me, font=("Roboto", 10, "bold"), fg="#444444", background="#FFFFFF", justify="center",command=self.copy,bd=0)
+        button.place(x=350,y=500)
+
         return
 
     def send(self):
@@ -93,6 +98,10 @@ class Homepage:
         window = tkinter.Tk()
         obj = Sign(window)
         window.mainloop()
+
+    def copy(self):
+        pyperclip.copy(self.me)
+        return
 
 
 
