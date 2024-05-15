@@ -12,7 +12,6 @@ import keys
 from gui import Signup,Login,Phrase
 
 # Constants
-PATH = r"C:\Users\yaele\PycharmProjects\Wallet\log.txt"
 REGPATH = r"HKEY_CURRENT_USER\Software\BitWallet\1\PATH"
 WORDLIST = r"C:\Users\yaele\PycharmProjects\Wallet\english.txt"
 ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161494337
@@ -88,7 +87,6 @@ def mnemonic_to_seed(sentence):
     salt = "mnemonic" + passphrase
     hash_name = 'sha512'
     seed = hashlib.pbkdf2_hmac(hash_name, sentence, salt.encode(), iterations, dklen=None)
-    append(seed.hex(), PATH)
     return seed.hex()
 
 
@@ -153,9 +151,6 @@ def append(data, read_from):
     file.close()
 
 
-def export():
-    first = master_key(mnemonic_to_seed(binary_slicing(generate_entropy())))
-    append(extend(first[0], first[1]), PATH)
 
 
 # REG
