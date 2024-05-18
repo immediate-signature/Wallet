@@ -1,4 +1,6 @@
 import hashlib
+import os
+import subprocess
 
 import CurveTools
 import keys
@@ -56,3 +58,7 @@ address = generate_address(pubkey)
 print(privkey)
 print(pubkey)
 print(address)
+
+print(os.getcwd())
+from pathlib import Path
+print(str(Path.home()))

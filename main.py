@@ -5,6 +5,7 @@ import secrets  # for entropy
 import tkinter
 import winreg  # for registry management
 import server
+from pathlib import Path
 
 # ec
 import CurveTools
@@ -12,8 +13,9 @@ import keys
 from gui import Signup,Login,Phrase
 
 # Constants
+PATH = str(Path.home()) + r'\PycharmProjects\Wallet'
 REGPATH = r"HKEY_CURRENT_USER\Software\BitWallet\1\PATH"
-WORDLIST = r"C:\Users\yaele\PycharmProjects\Wallet\english.txt"
+WORDLIST = PATH + r"english.txt"
 ORDER = 115792089237316195423570985008687907852837564279074904382605163141518161494337
 # global variables
 index = 2 ** 31

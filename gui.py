@@ -2,12 +2,14 @@ import json
 import tkinter
 import winreg
 from tkinter import messagebox
+from pathlib import Path
 
 import scraping
 import script
 import server
 import pyperclip
 
+PATH = str(Path.home()) + r'\PycharmProjects\Wallet\UI'
 
 def back_to_homepage():
     root = tkinter.Tk()
@@ -64,7 +66,7 @@ class Homepage:
         self.root.title('wallet')
         self.root.geometry(size(self.root))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\pasted image edited.png")
+        self.bg = tkinter.PhotoImage(file=PATH +r'\pasted image edited.png')
         self.canvas1 = tkinter.Canvas(self.root,width=self.root.winfo_screenwidth(), height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both",expand=True)
         self.canvas1.create_image(0,0,image=self.bg, anchor="nw")
@@ -112,7 +114,7 @@ class Login:
         self.root.title('Login')
         self.root.geometry(size(self.root,1200,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\login.png")
+        self.bg = tkinter.PhotoImage(file= PATH+ r"\login.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -147,7 +149,7 @@ class Signup:
         self.root.title('Sign up')
         self.root.geometry(size(self.root,1200,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\signup.png")
+        self.bg = tkinter.PhotoImage(file=PATH+r"\signup.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -188,7 +190,7 @@ class Send:
         self.root.title('wallet')
         self.root.geometry(size(self.root,1210,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\transfer.png")
+        self.bg = tkinter.PhotoImage(file=PATH+r"\transfer.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -248,7 +250,7 @@ class Sign:
         self.root.title('wallet')
         self.root.geometry(size(self.root,1000,650))
 
-        self.bg = tkinter.PhotoImage(file=r"C:\Users\yaele\PycharmProjects\Wallet\UI\sign.png")
+        self.bg = tkinter.PhotoImage(file=PATH+r"\sign.png")
         self.canvas1 = tkinter.Canvas(self.root, width=self.root.winfo_screenwidth(),
                                       height=self.root.winfo_screenheight())
         self.canvas1.pack(fill="both", expand=True)
@@ -288,4 +290,3 @@ class Sign:
         window = tkinter.Tk()
         obj = Homepage(window)
         window.mainloop()
-
